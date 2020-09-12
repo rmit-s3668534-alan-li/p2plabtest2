@@ -1,4 +1,5 @@
 package code;
+
 import java.util.ArrayList;
 
 public class Hashmap<T> {
@@ -93,11 +94,11 @@ public class Hashmap<T> {
 
 		for (int i = 0; i < size; i++) {
 			if (hashArray.get(i).getValue() != null) {
-				System.out.print(hashArray.get(i).getKey()+" ");
+				System.out.print(hashArray.get(i).getKey() + " ");
 				System.out.println(hashArray.get(i).getValue());
-			}else {
+			} else {
 				System.out.println("* *");
-				
+
 			}
 		}
 	}

@@ -3,14 +3,14 @@ package code;
 public class KeyValue<T>
 {
     private int key;
-    private T value;
+    private String value;
     
     public KeyValue(int key)
     {
         this.key = key;
     }
 
-    public KeyValue(int key, T value)
+    public KeyValue(int key, String value)
     {
         this.key = key;
         this.value = value;
@@ -21,7 +21,7 @@ public class KeyValue<T>
         return key;
     }
 
-    public T getValue()
+    public String getValue()
     {
         return value;
     }
@@ -31,7 +31,7 @@ public class KeyValue<T>
         this.key = key;
     }
 
-    public void setValue(T value)
+    public void setValue(String value)
     {
         this.value = value;
     }
