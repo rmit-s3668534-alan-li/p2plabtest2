@@ -16,6 +16,7 @@ public class Chord {
 		ArrayList<Node> nodelist = new ArrayList<Node>();
 
 		for (int i = 0; i < nodes.length; i++) {
+			//each node manages its own hashtable
 			Node node = new Node(nodes[i], bitspace);
 			node.setSuccessor(findsuccessor(nodes[i], nodes));
 			nodelist.add(node);
@@ -26,14 +27,14 @@ public class Chord {
 			System.out.println("\nHashmap Operations\n");
 			System.out.println("1. Insert ");
 			System.out.println("2. Find");
-			System.out.println("3. Delete");
-			System.out.println("4. List");
+			System.out.println("3. List");
 
 			int choice = scan.nextInt();
 			scan.nextLine();
 			switch (choice) {
 			case 1:
 
+				//main method handles hashing of each value as rehashing the value might store it in another hashtable
 				System.out.println("Enter element to insert:");
 				String input = scan.nextLine();
 				System.out.println("Enter key:");
@@ -74,31 +75,50 @@ public class Chord {
 				}
 				break;
 			case 2:
+				//search function
 				int found = -1;
+				int nodestart = 0;
 				System.out.println("Enter key to search:");
 				int search = scan.nextInt();
 				System.out.println("Enter starting node:");
 				home = scan.nextInt();
-				int nodestart = findsuccessor(home, nodes);
-				for (int i = 0; i < nodelist.size(); i++) {
-					if (nodelist.get(i).getKey() == nodestart) {
-						found = nodelist.get(i).find(search);
-						if (found != -1) {
-							result = nodelist.get(i).getData(found);
-							break;
-						}
+				//finds search initiator and successor node
+				for (int i = 0; i < nodes.length; i++) {
+					if (home == nodes[i]) {
+						nodestart = nodes[i];
+						break;
+					} else {
+						nodestart = findsuccessor(home, nodes);
 					}
 				}
+				int count = 0;
+				//searches successor node for file. if not found gets successor node of that node and repeats process 
+				//until all nodes in the network have been searched.
+				do {
+					for (int i = 0; i < nodelist.size(); i++) {
+						//gets appropriate node
+						if (nodelist.get(i).getKey() == nodestart) {
+							count++;
+							//searches node hashtable for key
+							found = nodelist.get(i).find(search);
+							//if found retrieve
+							if (found != -1) {
+								result = nodelist.get(i).getData(found);
+								System.out.println("Search results for node " + home +": " + result + " in node " + nodelist.get(i).getKey());
+								break;
+							} else {
+								//otherwise move to next node and repeat until all nodes searched
+								nodestart = findsuccessor(nodestart, nodes);
+							}
+						}
+					}
+				} while (count < nodelist.size() && found == -1);
+				
 				if (found == -1) {
-
+					System.out.println("The requested file could not be found");
 				}
-
-				System.out.println("Results: " + result);
 				break;
 			case 3:
-
-				break;
-			case 4:
 				for (int i = 0; i < nodelist.size(); i++) {
 					nodelist.get(i).display();
 				}
@@ -123,22 +143,20 @@ public class Chord {
 		return 5 - (key % 5);
 	}
 
+	//function to find the successor node of any node/machine in the network
 	public static int findsuccessor(int key, int[] array) {
 		int successor = -1;
 		for (int i = array.length - 1; i >= 0; i--) {
-			if (key == array[i]) {
+			if (key > array[array.length - 1]) {
+				successor = array[0];
+				break;
+			} else if (key >= array[i]) {
 				if (key == array[array.length - 1]) {
 					successor = array[0];
 				} else {
 					successor = array[i + 1];
+					break;
 				}
-				break;
-			} else if (key > array[array.length - 1]) {
-				successor = array[0];
-				break;
-			} else if (key >= array[i]) {
-				successor = array[i+1];
-				break;
 			}
 
 		}
