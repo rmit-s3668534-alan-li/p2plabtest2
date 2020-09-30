@@ -2,26 +2,22 @@ package code;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Random;
 import java.net.InetSocketAddress;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 public class Helper {
 	public static void main(String[] args) {
 
 	}
 
-	public static long hashSocketAddress(InetSocketAddress addr) {
-		// converts a ip address into a number
-		return 0l;
+	public long hashString(String s) {
+		int i = s.hashCode();
+		long x = hashHashCode(i);
+
+		return x;
 	}
 
-	public static long hashString(String s) {
-		// converts a hash string into a number
-		return 0l;
-	}
-
-	public static long hashHashCode(int i) {
+	public long hashHashCode(int i) {
 
 		// 32 bit regular hash code -> byte[4]
 		byte[] hashbytes = new byte[4];
@@ -64,6 +60,14 @@ public class Helper {
 			return ret;
 		}
 		return 0;
+	}
+
+	public String createRandomIP() {
+		return randomNumber() + "." + randomNumber() + "." + randomNumber() + "." + randomNumber();
+	}
+
+	public int randomNumber() {
+		return new Random().nextInt((255 - 1) + 1) + 1;
 	}
 
 	public static InetSocketAddress createSocketAddress(String addr) {

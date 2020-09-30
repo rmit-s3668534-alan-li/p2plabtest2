@@ -15,6 +15,7 @@ public class Chord {
 		Scanner scan = new Scanner(System.in);
 		int[] nodes = { 0, 85, 133, 182, 210, 245, 279, 324, 395, 451 };
 		ArrayList<Node> nodelist = new ArrayList<Node>();
+		Helper helper = new Helper();
 
 		for (int i = 0; i < nodes.length; i++) {
 			// each node manages its own hashtable
@@ -48,41 +49,34 @@ public class Chord {
 				// it in another hashtable
 				System.out.println("Enter element to insert:");
 				String input = scan.nextLine();
-				System.out.println("Enter key:");
-				int key = scan.nextInt();
+				//randomly generates an ip address
+				String ip = helper.createRandomIP();
+				System.out.println("Your IP is " + ip);
 				boolean isset = false;
-
-				int hash = hash(key, bitspace);
+				
+				//hashes ip address and resolves to an int;
+				int hash = (int) helper.hashString(ip);
+				while (hash > bitspace) {
+					hash = hash - bitspace;
+				}
+				System.out.println("Ip hash been hashed to key " + hash);
 				int successor = findsuccessor(hash, nodes);
 				for (int i = 0; i < nodelist.size(); i++) {
 					if (nodelist.get(i).getKey() == successor) {
-						isset = nodelist.get(i).add(new KeyValue<String>(key, input), hash);
+						isset = nodelist.get(i).add(new KeyValue<String>(hash, input), hash);
 						break;
 					}
 				}
 
 				while (isset == false) {
-					int count = 0;
-					if (count < 5) {
-						hash = hash2(key);
-						successor = findsuccessor(hash, nodes);
-						for (int i = 0; i < nodelist.size(); i++) {
-							if (nodelist.get(i).getKey() == successor) {
-								isset = nodelist.get(i).add(new KeyValue<String>(key, input), hash);
-								break;
-							}
-						}
-					} else {
-						hash = hash++;
-						successor = findsuccessor(hash, nodes);
-						for (int i = 0; i < nodelist.size(); i++) {
-							if (nodelist.get(i).getKey() == successor) {
-								isset = nodelist.get(i).add(new KeyValue<String>(key, input), hash);
-								break;
-							}
+					hash = hash++;
+					successor = findsuccessor(hash, nodes);
+					for (int i = 0; i < nodelist.size(); i++) {
+						if (nodelist.get(i).getKey() == successor) {
+							isset = nodelist.get(i).add(new KeyValue<String>(hash, input), hash);
+							break;
 						}
 					}
-					count++;
 				}
 				break;
 			case 2:
@@ -246,7 +240,7 @@ public class Chord {
 					arrDel(nodes, delnode);
 
 					deleteNode(delnode, nodelist, nodes);
-					
+
 					for (int i = 0; i < nodelist.size(); i++) {
 						nodelist.get(i).createFingerTable(9, nodes);
 					}
@@ -264,14 +258,6 @@ public class Chord {
 		scan.close();
 	}
 
-	public static int hash(int key, int bitspace) {
-		return key % bitspace;
-	}
-
-	public static int hash2(int key) {
-		return 5 - (key % 5);
-	}
-
 	// function to find the successor node of any node/machine in the network
 	public static int findsuccessor(int key, int[] array) {
 		int successor = -1;
@@ -280,7 +266,6 @@ public class Chord {
 
 			if (key > bitspace) {
 				key = key - bitspace;
-				System.out.println("KEY:" + key);
 			}
 
 			for (int i = array.length - 1; i >= 0; i--) {
@@ -422,6 +407,7 @@ public class Chord {
 				newnode.add(new KeyValue<String>(i, temp.getData(i)), i);
 			}
 		}
+		// add new node and data to network
 		nodelist.add(newnode);
 		return nodelist;
 	}
@@ -430,31 +416,32 @@ public class Chord {
 	public static void deleteNode(int node, @SuppressWarnings("rawtypes") ArrayList<Node> nodelist, int[] nodes) {
 		int succ = findsuccessor(node, nodes);
 		Node<String> temp = new Node<String>(1, bitspace);
-		//create temp storage for orphaned hashtable;
-		for (int i =0; i<nodelist.size(); i++) {
+		// create temp storage for orphaned hashtable;
+		for (int i = 0; i < nodelist.size(); i++) {
 			if (nodelist.get(i).getKey() == node) {
-				for (int j = 0; j<bitspace; j++) {
-					if (nodelist.get(i).find(j)!=-1) {
+				for (int j = 0; j < bitspace; j++) {
+					if (nodelist.get(i).find(j) != -1) {
 						temp.add(new KeyValue<String>(j, nodelist.get(i).getData(j)), j);
 					}
 				}
 			}
 		}
-		//update successor node with new hashtable data
+		// update successor node with new hashtable data
 		for (int i = 0; i < bitspace; i++) {
 			if (temp.find(i) != -1) {
-				for (int j =0; j<nodelist.size(); j++) {
+				for (int j = 0; j < nodelist.size(); j++) {
 					if (nodelist.get(j).getKey() == succ) {
 						nodelist.get(j).add(new KeyValue<String>(i, temp.getData(i)), i);
 					}
 				}
 			}
 		}
-		//remove node from network
-		for (int i =0; i<nodelist.size(); i++) {
-			if(nodelist.get(i).getKey() == node) {
+		// remove node from network
+		for (int i = 0; i < nodelist.size(); i++) {
+			if (nodelist.get(i).getKey() == node) {
 				nodelist.remove(i);
 			}
 		}
 	}
+
 }
